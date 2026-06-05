@@ -1,3 +1,8 @@
 /Currency/Indian_Currency_Dataset
 /Circles/venv
 /Circles/luke.png
+*.ppm
+
+!practice.ppm
+!practic01.ppm
+!croppedFrame.ppm
