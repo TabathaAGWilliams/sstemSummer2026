@@ -198,6 +198,26 @@ def threshold_rgb(image, T):
     return output
 
 
+# def threshold applies threshold without converting to grayscale, this assumes it's already gray
+def threshold(image, T):
+    #formula for threshold: s = 255 if gray >= T else 0
+    height = len(image)
+    width = len(image[0])
+
+    output = [[[0,0,0] for _ in range(width)] for _ in range(height)]
+
+    for row in range(height):
+        for col in range(width):
+            val = image[row][col][0]
+            if val >= T:
+                new_value = 255
+            else:
+                new_value = 0
+
+            output[row][col] = [new_value, new_value, new_value]
+
+    return output
+
 
 def crop(image, row_start, row_end, col_start, col_end):
     cropped = []
@@ -213,6 +233,19 @@ def crop(image, row_start, row_end, col_start, col_end):
     return cropped
 
 
+#func to_grayscale will allow us to change rgb p3 or p6 into grayscale
+def to_grayscale(image):
+    height = len(image)
+    width = len(image[0])
 
+    gray = [[[0, 0, 0] for _ in range(width)] for _ in range(height)]
+
+    for row in range(height):
+        for col in range(width):
+            r, g, b = image[row][col]
+            val = int(0.299*r + 0.587*g + 0.114*b)
+            gray[row][col] = [val, val, val]
+
+    return gray
 
 

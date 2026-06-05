@@ -36,3 +36,24 @@ def apply_kernel(image, kernel):
                     ppmChanges.clip(int(sum_b))
                 ]
     return output
+
+
+def combine_sobel(gx, gy):
+    height = len(gx)
+    width = len(gx[0])
+
+    output = [[[0,0,0] for _ in range(width)] for _ in range(height)]
+
+    for row in range(height):
+        for col in range(width):
+
+            r1, g1, b1 = gx[row][col]
+            r2, g2, b2 = gy[row][col]
+
+            r = ppmChanges.clip(abs(r1) + abs(r2))
+            g = ppmChanges.clip(abs(g1) + abs(g2))
+            b = ppmChanges.clip(abs(b1) + abs(b2))
+
+            output[row][col] = [r, g, b]
+
+    return output
