@@ -27,6 +27,38 @@ def read_ppm(filename):
         img.append(curr_row)
     return img, w, h
 
+# function read_ppm_p6 works for p6 files
+def read_ppm_p6(filename):
+    with open(filename, "rb") as f:
+        magic = f.readline().strip()
+
+        if magic != b'P6':
+            raise ValueError("Not a P6 file")
+
+        line = f.readline()
+        while line.startswith(b'#'):
+            line = f.readline()
+
+        parts = line.split()
+        w = int(parts[0])
+        h = int(parts[1])
+        max_val = int(f.readline())
+        pixel_data = f.read()
+    img = []
+    index = 0
+
+    for row in range(h):
+        curr_row = []
+        for col in range(w):
+            r = pixel_data[index]
+            g = pixel_data[index + 1]
+            b = pixel_data[index + 2]
+
+            curr_row.append([r, g, b])
+            index += 3
+        img.append(curr_row)
+
+    return img, w, h
 
 
 #function write_ppm creates a new ppm file
@@ -44,6 +76,21 @@ def write_ppm(filename, img, w, h):
             for col in range(w):
                 r, g, b = img[row][col]
                 f.write(f"{r} {g} {b}\n")
+
+
+
+# func write_ppm_p6 will output p6
+def write_ppm_p6(filename, img, w, h):
+    with open(filename, "wb") as f:
+        f.write(b"P6\n")
+        f.write(f"{w} {h}\n".encode())
+        f.write(b"255\n")
+
+        for row in range(h):
+            for col in range(w):
+                r, g, b = img[row][col]
+                f.write(bytes([r, g, b]))
+
 
 
 # func clip is a validation method 
@@ -151,10 +198,54 @@ def threshold_rgb(image, T):
     return output
 
 
+# def threshold applies threshold without converting to grayscale, this assumes it's already gray
+def threshold(image, T):
+    #formula for threshold: s = 255 if gray >= T else 0
+    height = len(image)
+    width = len(image[0])
+
+    output = [[[0,0,0] for _ in range(width)] for _ in range(height)]
+
+    for row in range(height):
+        for col in range(width):
+            val = image[row][col][0]
+            if val >= T:
+                new_value = 255
+            else:
+                new_value = 0
+
+            output[row][col] = [new_value, new_value, new_value]
+
+    return output
 
 
+def crop(image, row_start, row_end, col_start, col_end):
+    cropped = []
+
+    for row in range(row_start, row_end):
+        curr_row = []
+
+        for col in range(col_start, col_end):
+            curr_row.append(image[row][col])
+
+        cropped.append(curr_row)
+
+    return cropped
 
 
+#func to_grayscale will allow us to change rgb p3 or p6 into grayscale
+def to_grayscale(image):
+    height = len(image)
+    width = len(image[0])
 
+    gray = [[[0, 0, 0] for _ in range(width)] for _ in range(height)]
+
+    for row in range(height):
+        for col in range(width):
+            r, g, b = image[row][col]
+            val = int(0.299*r + 0.587*g + 0.114*b)
+            gray[row][col] = [val, val, val]
+
+    return gray
 
 
